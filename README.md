@@ -32,16 +32,23 @@ npm install
 npm run dev        # http://localhost:3000
 ```
 
-## Before going live on Vercel
+## Vercel
 
-1. **Environment variables.** Add every variable from `.env.example` to the Vercel project except `DATABASE_URL_UNPOOLED`. Functions run in `sin1` (`vercel.json`), next to the Neon database in `ap-southeast-1`.
+Live at https://mates-rates-mu.vercel.app. The Vercel project `hbarnett99s-projects/mates-rates` deploys every push to `main` of `hbarnett99/mates-rates` on GitHub. Functions run in `sin1` (`vercel.json`), next to the Neon database in `ap-southeast-1`.
+
+Already done:
+- Production has `MATES_APP_DATABASE_URL`, `NEON_AUTH_BASE_URL`, `NEON_AUTH_COOKIE_SECRET` and `CRON_SECRET`. The owner URLs stay out of Vercel, because nothing deployed uses them and the owner bypasses RLS.
+- The live URL is Neon Auth's trusted domain (`neon neon-auth domain list`).
+- The sign-up gate is on. Neon can't call localhost, so it only works on the deployed app. It fails closed: if the route is down or the URL is wrong, every sign-up is refused. For a new URL:
+  ```sh
+  neon neon-auth config webhook update --enabled --url https://<your-app>.vercel.app/api/auth-webhooks/before-create --enabled-events user.before_create --timeout 10
+  ```
+
+Still to do:
+1. **Google Maps keys.** Add `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`, `NEXT_PUBLIC_GOOGLE_MAP_ID` and `GOOGLE_PLACES_SERVER_KEY` to production with `vercel env add`, then redeploy. The two public values are built into the browser bundle, so a new value needs a new build. Until then the main screen errors after sign-in.
 2. **Your own Google OAuth client.** The shared credentials show Neon's branding and are for development only. Set the client's redirect URI to `<NEON_AUTH_BASE_URL>/callback/google`, then run `neon neon-auth oauth-provider` to switch to it.
-3. **Trusted domain.** Run `neon neon-auth domain add https://<your-app>.vercel.app`.
-4. **Sign-up gate.** Neon can't call localhost, so this only works once the app is deployed:
-   ```sh
-   neon neon-auth config webhook update --enabled --url https://<your-app>.vercel.app/api/auth-webhooks/before-create --enabled-events user.before_create
-   ```
-   After that, only allowlisted Google emails can create an account. Check it straight away by signing in with your own account. The webhook fails closed, so a wrong URL blocks every sign-up.
+
+Don't run `vercel env pull`. It replaces `.env.local` with Vercel's development variables, which don't include the local secrets.
 
 ## Checks
 
