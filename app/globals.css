@@ -1,0 +1,94 @@
+@import 'tailwindcss';
+
+/* Dark-only colour tokens from the spec. */
+@theme {
+  --color-bg: #0e1013;
+  --color-surface: #171a20;
+  --color-raised: #20242c;
+  --color-text: #e7e9ee;
+  --color-muted: #9aa1ad;
+  --color-accent: #f5a524;
+  --color-food: #f5a524;
+  --color-drink: #2dd4bf;
+  --color-both: #a78bfa;
+  --color-danger: #f87171;
+  --color-pin-text: #0e1013;
+  --color-line: #2c313b;
+
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  overscroll-behavior: none;
+}
+
+/* Pins fade and scale in over about 150 ms instead of popping. */
+@keyframes pin-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+
+.pin-enter {
+  animation: pin-in 150ms var(--ease-out-soft);
+}
+
+/* Deal card and add-deal sheet slide up on phone; the drawer slides in on desktop. */
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.skeleton {
+  background: var(--color-raised);
+  animation: skeleton-pulse 1.4s ease-in-out infinite;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}
